@@ -1,0 +1,39 @@
+{
+  "name": "xgettext-js-more-better",
+  "version": "0.0.0",
+  "description": "Extract gettext strings from Javascript source code",
+  "author": "Gabe Gorelick",
+  "license": "MIT",
+  "keywords": [
+    "xgettext",
+    "gettext",
+    "i18n",
+    "translate",
+    "translation"
+  ],
+  "files": [
+    "index.js"
+  ],
+  "homepage": "https://github.com/gabegorelick/xgettext-js-more-better",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gabegorelick/xgettext-js-more-better"
+  },
+  "bugs": {
+    "url": "https://github.com/gabegorelick/xgettext-js-more-better/issues"
+  },
+  "main": "./index.js",
+  "dependencies": {
+    "falafel": "^1.0.1",
+    "gettext-catalog": "0.0.2"
+  },
+  "devDependencies": {
+    "jscs": "^1.12.0",
+    "jshint": "^2.6.3",
+    "mocha": "^2.2.1",
+    "should": "^5.2.0"
+  },
+  "scripts": {
+    "test": "jscs *.js test/*.js && jshint *.js test/*.js && mocha"
+  }
+}
