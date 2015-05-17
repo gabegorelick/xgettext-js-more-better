@@ -62,7 +62,7 @@ function extract (source, options) {
         throw new Error('Domain must be a string literal (msgid "' + msgid + '")');
       }
 
-      domain = domainParam.string;
+      domain = domainParam.value;
     }
 
     // make sure plural forms match
