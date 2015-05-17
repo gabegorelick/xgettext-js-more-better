@@ -1,6 +1,6 @@
 {
   "name": "xgettext-js-more-better",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Extract gettext strings from Javascript source code",
   "author": "Gabe Gorelick",
   "license": "MIT",
