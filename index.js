@@ -10,17 +10,34 @@ function extract (source, options) {
   var catalog = new Catalog(options);
 
   falafel(source, {locations: true}, function (node) {
-    if (!node || node.type !== 'CallExpression' || !node.callee || node.callee.type !== 'Identifier') {
+    if (!node || node.type !== 'CallExpression' || !node.callee) {
       // not the right kind of AST node
       return;
     }
 
-    if (Object.keys(catalog.identifiers).indexOf(node.callee.name) === -1) {
+    var callee = node.callee;
+
+    var id;
+    if (callee.type === 'Identifier') {
+      // expressions like `gettext('Foo')`
+      id = callee.name;
+    } else if (callee.type === 'MemberExpression') {
+      // expression like `i18n.gettext('Foo')`
+      if (!callee.property || callee.property.type !== 'Identifier') {
+        return;
+      }
+
+      id = callee.property.name;
+    } else {
+      return;
+    }
+
+    if (Object.keys(catalog.identifiers).indexOf(id) === -1) {
       // not a gettext function
       return;
     }
 
-    var spec = catalog.identifiers[node.callee.name];
+    var spec = catalog.identifiers[id];
     var params = node.arguments;
     var msgidParam = params[spec.indexOf('msgid')];
 
