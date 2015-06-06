@@ -13,6 +13,7 @@ describe('xgettext-js-more-better', function () {
     var message = pos[0].items[0];
     message.msgid.should.equal('Hi');
     should(message.msgid_plural).not.be.ok;
+    should(message.msgctxt).not.be.ok;
     message.references.should.eql(['foo.js:1']);
   });
 
@@ -60,6 +61,19 @@ describe('xgettext-js-more-better', function () {
     var message = pos[0].items[0];
     message.msgid.should.equal('Boat');
     message.msgid_plural.should.equal('Boats');
+    message.references.should.eql(['foo.js:1']);
+  });
+
+  it('should extract contexts', function () {
+    var pos = xgettext('pgettext("Verb", "File")', {filename: 'foo.js'}).toPOs();
+    pos.length.should.equal(1);
+    pos[0].domain.should.equal('messages');
+    pos[0].items.length.should.equal(1);
+
+    var message = pos[0].items[0];
+    message.msgid.should.equal('File');
+    should(message.msgid_plural).not.be.ok;
+    message.msgctxt.should.equal('Verb');
     message.references.should.eql(['foo.js:1']);
   });
 
