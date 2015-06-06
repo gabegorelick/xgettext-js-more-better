@@ -147,4 +147,9 @@ describe('xgettext-js-more-better', function () {
     should(message.msgid_plural).not.be.ok;
     message.references.should.eql(['foo.js:1']);
   });
+
+  it("shouldn't extract concatenated strings with non-literal parts", function () {
+    var pos = xgettext('gettext("Hello " + variable)').toPOs();
+    pos.length.should.equal(0);
+  });
 });

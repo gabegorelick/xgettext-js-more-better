@@ -46,8 +46,14 @@ function extract (source, options) {
       return;
     }
 
+    var invalidMsgid;
     var msgid = (function () {
       var extractMsgid = function (node) {
+        if (invalidMsgid) {
+          // stop recursing if we already know this node isn't a valid msgid
+          return;
+        }
+
         if (node.type === 'Literal') {
           return node.value;
         }
@@ -56,12 +62,15 @@ function extract (source, options) {
           return extractMsgid(node.left) + extractMsgid(node.right);
         }
 
-        return '';
+        // common example of this is something like
+        // gettext('Hello ' + user),
+        // i.e. where some part of msgid isn't a literal
+        invalidMsgid = true;
       };
 
       return extractMsgid(msgidParam);
     })();
-    if (!msgid) {
+    if (!msgid || invalidMsgid) {
       return;
     }
 
