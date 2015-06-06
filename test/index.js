@@ -4,7 +4,7 @@ var should = require('should');
 var xgettext = require('..');
 
 describe('xgettext-js-more-better', function () {
-  it('should work', function () {
+  it('should work for the simple case', function () {
     var pos = xgettext('gettext("Hi")', {filename: 'foo.js'}).toPOs();
     pos.length.should.equal(1);
     pos[0].domain.should.equal('messages');
@@ -15,6 +15,11 @@ describe('xgettext-js-more-better', function () {
     should(message.msgid_plural).not.be.ok;
     should(message.msgctxt).not.be.ok;
     message.references.should.eql(['foo.js:1']);
+  });
+
+  it("shouldn't extract calls to non-gettext functions", function () {
+    var pos = xgettext('someFunction("Hi")').toPOs();
+    pos.length.should.equal(0);
   });
 
   it('should extract gettext as parameter', function () {
@@ -109,6 +114,11 @@ describe('xgettext-js-more-better', function () {
 
   it("shouldn't extract calls to gettext with non-string literals", function () {
     var pos = xgettext('gettext(someVariable)').toPOs();
+    pos.length.should.equal(0);
+  });
+
+  it("shouldn't extract calls to gettext with no arguments", function () {
+    var pos = xgettext('gettext()').toPOs();
     pos.length.should.equal(0);
   });
 
