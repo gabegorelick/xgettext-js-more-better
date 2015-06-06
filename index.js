@@ -2,14 +2,18 @@
 
 var falafel = require('falafel');
 var Catalog = require('gettext-catalog');
+var assign = require('lodash.assign');
 
-function extract (source, options) {
-  options = options || {};
+function extract (source, gettextOptions, acornOptions) {
+  gettextOptions = gettextOptions || {};
 
-  var filename = options.filename;
-  var catalog = new Catalog(options);
+  var filename = gettextOptions.filename;
+  var catalog = new Catalog(gettextOptions);
 
-  falafel(source, {locations: true}, function (node) {
+  // caller can turn off locations if they want by passing locations:false
+  acornOptions = assign({locations: true}, acornOptions);
+
+  falafel(source, acornOptions, function (node) {
     if (!node || node.type !== 'CallExpression' || !node.callee) {
       // not the right kind of AST node
       return;
@@ -130,6 +134,11 @@ function extract (source, options) {
     var message = {};
     message[domain] = {};
     var key = catalog.messageToKey(msgid, context);
+    var loc = node.loc || {
+      // locations can be turned off to increase parse speed if users really want
+      start: {line: null, column: null},
+      end: {line: null, column: null}
+    };
     message[domain][key] = {
       msgid: msgid,
       msgctxt: context,
@@ -137,10 +146,10 @@ function extract (source, options) {
       references: [
         {
           filename: filename,
-          firstLine: node.loc.start.line,
-          firstColumn: node.loc.start.column,
-          lastLine: node.loc.end.line,
-          lastColumn: node.loc.end.column
+          firstLine: loc.start.line,
+          firstColumn: loc.start.column,
+          lastLine: loc.end.line,
+          lastColumn: loc.end.column
         }
       ],
       extractedComments: [] // TODO

@@ -17,6 +17,14 @@ describe('xgettext-js-more-better', function () {
     message.references.should.eql(['foo.js:1']);
   });
 
+  it('should support passing acorn options', function (done) {
+    xgettext('var a = {a: 1,}', {}, {
+      onInsertedSemicolon: function () {
+        done();
+      }
+    });
+  });
+
   it("shouldn't extract calls to non-gettext functions", function () {
     var pos = xgettext('someFunction("Hi")').toPOs();
     pos.length.should.equal(0);
@@ -173,5 +181,29 @@ describe('xgettext-js-more-better', function () {
   it("shouldn't extract concatenated strings with non-literal parts", function () {
     var pos = xgettext('gettext("Hello " + variable)').toPOs();
     pos.length.should.equal(0);
+  });
+
+  it('should support es6', function () {
+    var pos = xgettext('let foo = gettext("Hello")', {filename: 'foo.js'}, {ecmaVersion: 6}).toPOs();
+    pos.length.should.equal(1);
+    pos[0].domain.should.equal('messages');
+    pos[0].items.length.should.equal(1);
+
+    var message = pos[0].items[0];
+    message.msgid.should.equal('Hello');
+    should(message.msgid_plural).not.be.ok;
+    message.references.should.eql(['foo.js:1']);
+  });
+
+  it('should work without locations', function () {
+    var pos = xgettext('gettext("Hello")', {filename: 'foo.js'}, {locations: false}).toPOs();
+    pos.length.should.equal(1);
+    pos[0].domain.should.equal('messages');
+    pos[0].items.length.should.equal(1);
+
+    var message = pos[0].items[0];
+    message.msgid.should.equal('Hello');
+    should(message.msgid_plural).not.be.ok;
+    message.references.should.eql(['foo.js']);
   });
 });
