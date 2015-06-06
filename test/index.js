@@ -68,5 +68,10 @@ describe('xgettext-js-more-better', function () {
     pos.length.should.equal(0);
   });
 
+  it("shouldn't extract calls to gettext with non-string literals", function () {
+    var pos = xgettext('gettext(someVariable)').toPOs();
+    pos.length.should.equal(0);
+  });
+
   // TODO more tests
 });
