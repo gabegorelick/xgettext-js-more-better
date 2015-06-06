@@ -44,14 +44,27 @@ function extract (source, options) {
     if (!msgidParam) {
       // don't extract gettext() without param
       return;
-    } else if (msgidParam.type !== 'Literal') {
-      // Don't extract gettext() with non-literal param. This usually
-      // means you want to translate a variable whose value has already been
-      // extracted.
+    }
+
+    var msgid = (function () {
+      var extractMsgid = function (node) {
+        if (node.type === 'Literal') {
+          return node.value;
+        }
+
+        if (node.type === 'BinaryExpression' && node.operator === '+') {
+          return extractMsgid(node.left) + extractMsgid(node.right);
+        }
+
+        return '';
+      };
+
+      return extractMsgid(msgidParam);
+    })();
+    if (!msgid) {
       return;
     }
 
-    var msgid = msgidParam.value;
     var contextIndex = spec.indexOf('msgctxt');
 
     var context = null; // null context is *not* the same as empty context

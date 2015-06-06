@@ -73,5 +73,39 @@ describe('xgettext-js-more-better', function () {
     pos.length.should.equal(0);
   });
 
-  // TODO more tests
+  it('should extract concatenated strings', function () {
+    var pos = xgettext('gettext("Hello " + "World")', {filename: 'foo.js'}).toPOs();
+    pos.length.should.equal(1);
+    pos[0].domain.should.equal('messages');
+    pos[0].items.length.should.equal(1);
+
+    var message = pos[0].items[0];
+    message.msgid.should.equal('Hello World');
+    should(message.msgid_plural).not.be.ok;
+    message.references.should.eql(['foo.js:1']);
+  });
+
+  it('should extract twice concatenated strings', function () {
+    var pos = xgettext('gettext("Hello " + "World" + "!")', {filename: 'foo.js'}).toPOs();
+    pos.length.should.equal(1);
+    pos[0].domain.should.equal('messages');
+    pos[0].items.length.should.equal(1);
+
+    var message = pos[0].items[0];
+    message.msgid.should.equal('Hello World!');
+    should(message.msgid_plural).not.be.ok;
+    message.references.should.eql(['foo.js:1']);
+  });
+
+  it('should extract multi-line strings', function () {
+    var pos = xgettext('gettext("Hello " +\n "World")', {filename: 'foo.js'}).toPOs();
+    pos.length.should.equal(1);
+    pos[0].domain.should.equal('messages');
+    pos[0].items.length.should.equal(1);
+
+    var message = pos[0].items[0];
+    message.msgid.should.equal('Hello World');
+    should(message.msgid_plural).not.be.ok;
+    message.references.should.eql(['foo.js:1']);
+  });
 });
