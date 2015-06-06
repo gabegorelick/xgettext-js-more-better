@@ -63,5 +63,10 @@ describe('xgettext-js-more-better', function () {
     message.references.should.eql(['foo.js:1']);
   });
 
+  it("shouldn't emit PO for file that has no messages", function () {
+    var pos = xgettext('', {filename: 'foo.js'}).toPOs();
+    pos.length.should.equal(0);
+  });
+
   // TODO more tests
 });
