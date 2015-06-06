@@ -22,12 +22,19 @@ function extract (source, options) {
       // expressions like `gettext('Foo')`
       id = callee.name;
     } else if (callee.type === 'MemberExpression') {
-      // expression like `i18n.gettext('Foo')`
-      if (!callee.property || callee.property.type !== 'Identifier') {
+      if (!callee.property) {
         return;
       }
 
-      id = callee.property.name;
+      if (callee.property.type === 'Identifier') {
+        // i18n.gettext
+        id = callee.property.name;
+      } else if (callee.property.type === 'Literal') {
+        // i18n["gettext"]
+        id = callee.property.value;
+      } else {
+        return;
+      }
     } else {
       return;
     }

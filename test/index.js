@@ -95,8 +95,20 @@ describe('xgettext-js-more-better', function () {
     message.references.should.eql(['foo.js:1']);
   });
 
-  it('should support extracting method calls', function () {
+  it('should extract method calls to gettext', function () {
     var pos = xgettext('i18n.gettext("Hi")', {filename: 'foo.js'}).toPOs();
+    pos.length.should.equal(1);
+    pos[0].domain.should.equal('messages');
+    pos[0].items.length.should.equal(1);
+
+    var message = pos[0].items[0];
+    message.msgid.should.equal('Hi');
+    should(message.msgid_plural).not.be.ok;
+    message.references.should.eql(['foo.js:1']);
+  });
+
+  it('should extract foo["gettext"]("string")', function () {
+    var pos = xgettext('i18n["gettext"]("Hi")', {filename: 'foo.js'}).toPOs();
     pos.length.should.equal(1);
     pos[0].domain.should.equal('messages');
     pos[0].items.length.should.equal(1);
