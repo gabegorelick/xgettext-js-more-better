@@ -10,8 +10,8 @@ function extract (source, gettextOptions, espreeOptions) {
   var filename = gettextOptions.filename;
   var catalog = new Catalog(gettextOptions);
 
-  // caller can turn off locations if they want by passing loc:false
-  espreeOptions = assign({loc: true}, espreeOptions);
+  // Caller can turn off locations or extracting comments if they want
+  espreeOptions = assign({loc: true, attachComment: true}, espreeOptions);
 
   falafel(source, espreeOptions, function (node) {
     if (!node || node.type !== 'CallExpression' || !node.callee) {
@@ -152,7 +152,17 @@ function extract (source, gettextOptions, espreeOptions) {
           lastColumn: loc.end.column
         }
       ],
-      extractedComments: [] // TODO
+      extractedComments: (function () {
+        var comments = node.leadingComments || (node.parent ? node.parent.leadingComments : []) || [];
+
+        return comments.reduce(function (comments, comment) {
+          if (comment.type === 'Line' && comment.value.indexOf('/') === 0) {
+            // comment of the form ///
+            comments.push(comment.value.substr(1).trim());
+          }
+          return comments;
+        }, []);
+      })()
     };
 
     catalog.addMessages(message);

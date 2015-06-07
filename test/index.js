@@ -221,4 +221,69 @@ describe('xgettext-js-more-better', function () {
     should(message.msgid_plural).not.be.ok;
     message.references.should.eql(['foo.js']);
   });
+
+  it('should extract comments', function () {
+    var pos = xgettext('/// comment\n gettext("Hello")', {filename: 'foo.js'}).toPOs();
+    pos.length.should.equal(1);
+    pos[0].domain.should.equal('messages');
+    pos[0].items.length.should.equal(1);
+
+    var message = pos[0].items[0];
+    message.extractedComments.should.eql(['comment']);
+    message.msgid.should.equal('Hello');
+    should(message.msgid_plural).not.be.ok;
+    message.references.should.eql(['foo.js:2']);
+  });
+
+  it('should extract line comments with no trailing space', function () {
+    var pos = xgettext('///comment\n gettext("Hello")', {filename: 'foo.js'}).toPOs();
+    pos.length.should.equal(1);
+    pos[0].domain.should.equal('messages');
+    pos[0].items.length.should.equal(1);
+
+    var message = pos[0].items[0];
+    message.extractedComments.should.eql(['comment']);
+    message.msgid.should.equal('Hello');
+    should(message.msgid_plural).not.be.ok;
+    message.references.should.eql(['foo.js:2']);
+  });
+
+  it('should extract statements with multiple line comments', function () {
+    var pos = xgettext('///comment1\n///comment2\n gettext("Hello")', {filename: 'foo.js'}).toPOs();
+    pos.length.should.equal(1);
+    pos[0].domain.should.equal('messages');
+    pos[0].items.length.should.equal(1);
+
+    var message = pos[0].items[0];
+    message.extractedComments.should.eql(['comment1', 'comment2']);
+    message.msgid.should.equal('Hello');
+    should(message.msgid_plural).not.be.ok;
+    message.references.should.eql(['foo.js:3']);
+  });
+
+  it('should work without attaching comments', function () {
+    var pos = xgettext('///comment\ngettext("Hello")', {filename: 'foo.js'}, {attachComment: false}).toPOs();
+    pos.length.should.equal(1);
+    pos[0].domain.should.equal('messages');
+    pos[0].items.length.should.equal(1);
+
+    var message = pos[0].items[0];
+    message.extractedComments.should.eql([]);
+    message.msgid.should.equal('Hello');
+    should(message.msgid_plural).not.be.ok;
+    message.references.should.eql(['foo.js:2']);
+  });
+
+  it("shouldn't extract // comments without the third /", function () {
+    var pos = xgettext('//comment\n gettext("Hello")', {filename: 'foo.js'}).toPOs();
+    pos.length.should.equal(1);
+    pos[0].domain.should.equal('messages');
+    pos[0].items.length.should.equal(1);
+
+    var message = pos[0].items[0];
+    message.extractedComments.should.eql([]);
+    message.msgid.should.equal('Hello');
+    should(message.msgid_plural).not.be.ok;
+    message.references.should.eql(['foo.js:2']);
+  });
 });
