@@ -40,15 +40,15 @@ For example,
 xgettext('gettext("Hi")', {filename: 'foo.js'});
 ```
 
-### `acornOptions`
+### `espreeOptions`
 
-Optional object containing options passed to [acorn](https://github.com/marijnh/acorn)
-(by way of [falafel](https://github.com/substack/node-falafel)). Use this to
-customize Javascript parsing behavior. For example, to extract strings from ES6
-code:
+Optional object containing options passed to [espree](https://npmjs.com/espree)
+(by way of [falafel-espree](https://npmjs.com/falafel-espree)). Use this to
+customize Javascript parsing behavior. For example, to customize supported ES6
+features:
 
 ```js
-xgettext('let foo = gettext("Hi")', {}, {ecmaVersion: 6});
+xgettext('let foo = gettext("Hi")', {}, { ecmaFeatures: { arrowFunctions: true } });
 ```
 
 ## License

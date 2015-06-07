@@ -17,11 +17,13 @@ describe('xgettext-js-more-better', function () {
     message.references.should.eql(['foo.js:1']);
   });
 
-  it('should support passing acorn options', function (done) {
-    xgettext('var a = {a: 1,}', {}, {
-      onInsertedSemicolon: function () {
-        done();
-      }
+  it('should support passing espree options', function () {
+    (function () {
+      xgettext('() => {}');
+    }).should.throw();
+
+    xgettext('() => {}', {}, {
+      ecmaFeatures: {arrowFunctions: true}
     });
   });
 
@@ -196,7 +198,8 @@ describe('xgettext-js-more-better', function () {
   });
 
   it('should support es6', function () {
-    var pos = xgettext('let foo = gettext("Hello")', {filename: 'foo.js'}, {ecmaVersion: 6}).toPOs();
+    // block bindings is the one es6 feature espree turns on by default
+    var pos = xgettext('let foo = gettext("Hello")', {filename: 'foo.js'}).toPOs();
     pos.length.should.equal(1);
     pos[0].domain.should.equal('messages');
     pos[0].items.length.should.equal(1);
@@ -208,7 +211,7 @@ describe('xgettext-js-more-better', function () {
   });
 
   it('should work without locations', function () {
-    var pos = xgettext('gettext("Hello")', {filename: 'foo.js'}, {locations: false}).toPOs();
+    var pos = xgettext('gettext("Hello")', {filename: 'foo.js'}, {loc: false}).toPOs();
     pos.length.should.equal(1);
     pos[0].domain.should.equal('messages');
     pos[0].items.length.should.equal(1);

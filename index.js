@@ -1,19 +1,19 @@
 'use strict';
 
-var falafel = require('falafel');
+var falafel = require('falafel-espree');
 var Catalog = require('gettext-catalog');
 var assign = require('lodash.assign');
 
-function extract (source, gettextOptions, acornOptions) {
+function extract (source, gettextOptions, espreeOptions) {
   gettextOptions = gettextOptions || {};
 
   var filename = gettextOptions.filename;
   var catalog = new Catalog(gettextOptions);
 
-  // caller can turn off locations if they want by passing locations:false
-  acornOptions = assign({locations: true}, acornOptions);
+  // caller can turn off locations if they want by passing loc:false
+  espreeOptions = assign({loc: true}, espreeOptions);
 
-  falafel(source, acornOptions, function (node) {
+  falafel(source, espreeOptions, function (node) {
     if (!node || node.type !== 'CallExpression' || !node.callee) {
       // not the right kind of AST node
       return;
